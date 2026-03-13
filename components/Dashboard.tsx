@@ -299,7 +299,14 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </div>
 
                 <div className="mb-6">
-                    <SatelliteViewer lat={solarData.latitude} lng={solarData.longitude} />
+                    <SatelliteViewer 
+                        lat={solarData.latitude} 
+                        lng={solarData.longitude} 
+                        onLocationChange={(lat, lng) => {
+                            handleDataChange('latitude', lat);
+                            handleDataChange('longitude', lng);
+                        }}
+                    />
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">

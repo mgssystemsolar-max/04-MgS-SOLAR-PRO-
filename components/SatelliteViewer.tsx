@@ -26,6 +26,7 @@ L.Marker.prototype.options.icon = DefaultIcon;
 interface Props {
   lat?: number;
   lng?: number;
+  onLocationChange?: (lat: number, lng: number) => void;
 }
 
 // Dados fictícios para o gráfico de telemetria (Exemplo do usuário)
@@ -134,7 +135,7 @@ const SolarContours: React.FC<{ lat: number, lng: number, show: boolean }> = ({ 
     );
 };
 
-export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
+export const SatelliteViewer: React.FC<Props> = ({ lat, lng, onLocationChange }) => {
   const [currentLat, setCurrentLat] = useState<number | undefined>(lat);
   const [currentLng, setCurrentLng] = useState<number | undefined>(lng);
   
@@ -228,7 +229,21 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
                 />
             )}
             
-            <Marker position={[currentLat!, currentLng!]} />
+            <Marker 
+                position={[currentLat!, currentLng!]} 
+                draggable={true}
+                eventHandlers={{
+                    dragend: (e) => {
+                        const marker = e.target;
+                        const position = marker.getLatLng();
+                        setCurrentLat(position.lat);
+                        setCurrentLng(position.lng);
+                        if (onLocationChange) {
+                            onLocationChange(position.lat, position.lng);
+                        }
+                    },
+                }}
+            />
             <SolarContours lat={currentLat!} lng={currentLng!} show={viewMode === 'irradiation'} />
             <MapUpdater lat={currentLat!} lng={currentLng!} />
          </MapContainer>
@@ -392,11 +407,19 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
       </div>
       
       {hasLocation && (viewMode === 'map' || viewMode === 'irradiation') && (
-        <div className="mt-3 flex gap-2 items-start bg-yellow-500/10 p-2 rounded border border-yellow-500/20">
-            <Compass size={14} className="text-yellow-500 mt-0.5 flex-shrink-0" />
-            <p className="text-[10px] text-yellow-500/80 leading-tight">
-                Utilize a visualização em tela cheia para ver mais detalhes do telhado.
-            </p>
+        <div className="mt-3 flex flex-col gap-2">
+            <div className="flex gap-2 items-start bg-yellow-500/10 p-2 rounded border border-yellow-500/20">
+                <Compass size={14} className="text-yellow-500 mt-0.5 flex-shrink-0" />
+                <p className="text-[10px] text-yellow-500/80 leading-tight">
+                    Utilize a visualização em tela cheia para ver mais detalhes do telhado.
+                </p>
+            </div>
+            <div className="flex gap-2 items-start bg-sky-500/10 p-2 rounded border border-sky-500/20">
+                <MapIcon size={14} className="text-sky-500 mt-0.5 flex-shrink-0" />
+                <p className="text-[10px] text-sky-500/80 leading-tight">
+                    <strong>Dica:</strong> Se o endereço não estiver exato, você pode arrastar o marcador azul no mapa para a posição correta da casa.
+                </p>
+            </div>
         </div>
       )}
     </Card>

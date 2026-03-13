@@ -161,7 +161,8 @@ export const CommercialCard: React.FC<Props> = ({ data, onChange, specs }) => {
 
     setLoadingLoc(true);
     try {
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1`, {
+        // Adicionando countrycodes=br para restringir a busca ao Brasil e melhorar a precisão
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(addr)}&limit=1&countrycodes=br`, {
             headers: { 'Accept-Language': 'pt-BR' }
         });
         
@@ -178,7 +179,7 @@ export const CommercialCard: React.FC<Props> = ({ data, onChange, specs }) => {
             onChange('address', displayName);
             updateLocationData(lat, lng);
         } else {
-            alert("Endereço não encontrado. Tente 'Cidade, Estado' ou use coordenadas.");
+            alert("Endereço não encontrado com precisão. Tente adicionar a cidade e o estado (ex: Rua X, 123, São Paulo, SP) ou use coordenadas.");
         }
     } catch (error) {
         console.warn("Erro na busca de endereço (API Indisponível/Offline).");
