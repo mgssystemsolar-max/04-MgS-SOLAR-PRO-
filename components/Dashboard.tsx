@@ -8,7 +8,6 @@ import { ProductionChart } from './ProductionChart';
 import { ChecklistCard } from './ChecklistCard';
 import { ProposalView } from './ProposalView';
 import { HistoryModal } from './HistoryModal';
-import { SatelliteViewer } from './SatelliteViewer';
 import { calculateTechnicalSpecs, calculateProduction, generateDefaultChecklist, calculatePayback, calculateFinancials, INVERTER_OPTIONS } from '../services/solarLogic';
 import { SolarSystemData, ChecklistItem, User, SavedProject, ProposalSettings } from '../types';
 
@@ -295,17 +294,6 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                         specs={specs}
                         onImageChange={handleImageChange}
                         imagePreview={imagePreview}
-                    />
-                </div>
-
-                <div className="mb-6">
-                    <SatelliteViewer 
-                        lat={solarData.latitude} 
-                        lng={solarData.longitude} 
-                        onLocationChange={(lat, lng) => {
-                            handleDataChange('latitude', lat);
-                            handleDataChange('longitude', lng);
-                        }}
                     />
                 </div>
 
