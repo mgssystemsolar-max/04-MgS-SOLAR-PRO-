@@ -135,6 +135,9 @@ const SolarContours: React.FC<{ lat: number, lng: number, show: boolean }> = ({ 
 };
 
 export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
+  const [currentLat, setCurrentLat] = useState<number | undefined>(lat);
+  const [currentLng, setCurrentLng] = useState<number | undefined>(lng);
+  
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showGrid, setShowGrid] = useState(false);
   const [mapType, setMapType] = useState<'satellite' | 'street'>('satellite');
@@ -142,6 +145,28 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
   
   const [containerReady, setContainerReady] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (lat !== undefined && lng !== undefined) {
+      setCurrentLat(lat);
+      setCurrentLng(lng);
+    }
+  }, [lat, lng]);
+
+  useEffect(() => {
+    if (lat === undefined && lng === undefined && 'geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentLat(position.coords.latitude);
+          setCurrentLng(position.coords.longitude);
+        },
+        (error) => {
+          console.warn("Geolocation error:", error);
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      );
+    }
+  }, [lat, lng]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -171,8 +196,8 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
   };
 
   const openGoogleMaps = () => {
-      if (lat && lng) {
-          window.open(`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`, '_blank');
+      if (currentLat && currentLng) {
+          window.open(`https://www.google.com/maps/search/?api=1&query=${currentLat},${currentLng}`, '_blank');
       }
   };
 
@@ -183,7 +208,7 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
     return (
     <div className="relative w-full h-full bg-slate-900 z-0">
          <MapContainer 
-            center={[lat!, lng!]} 
+            center={[currentLat!, currentLng!]} 
             zoom={19} 
             style={{ height: '100%', width: '100%', borderRadius: '8px' }}
             scrollWheelZoom={true}
@@ -203,9 +228,9 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
                 />
             )}
             
-            <Marker position={[lat!, lng!]} />
-            <SolarContours lat={lat!} lng={lng!} show={viewMode === 'irradiation'} />
-            <MapUpdater lat={lat!} lng={lng!} />
+            <Marker position={[currentLat!, currentLng!]} />
+            <SolarContours lat={currentLat!} lng={currentLng!} show={viewMode === 'irradiation'} />
+            <MapUpdater lat={currentLat!} lng={currentLng!} />
          </MapContainer>
          
          {/* Grid Overlay */}
@@ -267,12 +292,12 @@ export const SatelliteViewer: React.FC<Props> = ({ lat, lng }) => {
         </div>
         <p className="text-slate-400 text-sm font-bold mb-1">Aguardando Localização</p>
         <p className="text-slate-500 text-xs max-w-xs">
-            Use a busca de endereço no painel acima para carregar o Mapa via Satélite.
+            Use a busca de endereço no painel acima para carregar o Mapa via Satélite, ou permita o acesso à sua localização.
         </p>
     </div>
   );
 
-  const hasLocation = lat !== undefined && lng !== undefined;
+  const hasLocation = currentLat !== undefined && currentLng !== undefined;
 
   // Fullscreen Modal View
   if (isFullscreen) {
