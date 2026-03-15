@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Save, Printer, History, LayoutTemplate, PenTool, Trash2, X } from 'lucide-react';
+import { Save, Printer, History, LayoutTemplate, PenTool, Trash2, X, Calculator } from 'lucide-react';
 import { Header } from './Header';
 import { CommercialCard } from './CommercialCard';
 import { TechnicalCard } from './TechnicalCard';
@@ -8,6 +8,7 @@ import { ProductionChart } from './ProductionChart';
 import { ChecklistCard } from './ChecklistCard';
 import { ProposalView } from './ProposalView';
 import { HistoryModal } from './HistoryModal';
+import { SizingCalculatorModal } from './SizingCalculatorModal';
 import { calculateTechnicalSpecs, calculateProduction, generateDefaultChecklist, calculatePayback, calculateFinancials, INVERTER_OPTIONS } from '../services/solarLogic';
 import { SolarSystemData, ChecklistItem, User, SavedProject, ProposalSettings } from '../types';
 
@@ -69,6 +70,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
   const [historyOpen, setHistoryOpen] = useState(false);
   const [savedProjects, setSavedProjects] = useState<SavedProject[]>([]);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
+
+  // Calculator State
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
 
   // Derived State (Calculations)
   const specs = useMemo(() => calculateTechnicalSpecs(solarData), [solarData]);
@@ -272,12 +276,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
                 </button>
             </div>
 
-            <button 
-                onClick={() => setHistoryOpen(true)}
-                className="flex items-center gap-2 text-slate-400 hover:text-sky-400 transition-colors bg-slate-800 p-2 rounded-lg border border-slate-700 hover:border-sky-500"
-            >
-                <History size={20} /> <span className="text-sm font-bold">Histórico ({savedProjects.length})</span>
-            </button>
+            <div className="flex gap-2">
+                <button 
+                    onClick={() => setCalculatorOpen(true)}
+                    className="flex items-center gap-2 text-slate-400 hover:text-sky-400 transition-colors bg-slate-800 p-2 rounded-lg border border-slate-700 hover:border-sky-500"
+                >
+                    <Calculator size={20} /> <span className="text-sm font-bold">Calculadora</span>
+                </button>
+                <button 
+                    onClick={() => setHistoryOpen(true)}
+                    className="flex items-center gap-2 text-slate-400 hover:text-sky-400 transition-colors bg-slate-800 p-2 rounded-lg border border-slate-700 hover:border-sky-500"
+                >
+                    <History size={20} /> <span className="text-sm font-bold">Histórico ({savedProjects.length})</span>
+                </button>
+            </div>
         </div>
 
         {viewMode === 'editor' ? (
@@ -348,6 +360,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
         projects={savedProjects}
         onLoad={handleLoadProject}
         onDelete={handleDeleteProject}
+      />
+
+      <SizingCalculatorModal 
+        isOpen={calculatorOpen}
+        onClose={() => setCalculatorOpen(false)}
+        initialHsp={solarData.hsp}
+        initialModulePower={solarData.modulePowerW}
       />
 
       {/* Save Project Modal */}
