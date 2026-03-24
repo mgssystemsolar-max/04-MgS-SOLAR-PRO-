@@ -53,6 +53,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
                 </div>
                 <ul className="text-sm text-slate-600 space-y-2 list-disc pl-5">
                   <li><strong>Conta de Energia:</strong> Insira o valor médio da conta (R$) e a tarifa da concessionária (R$/kWh). O sistema divide o valor pela tarifa para estimar o consumo real em kWh.</li>
+                  <li><strong>Histórico de Contas (Upload):</strong> Você pode fazer o upload de múltiplas contas de energia (imagens ou PDFs) para manter o histórico do cliente salvo junto ao projeto.</li>
                   <li><strong>Precificação:</strong> Na aba Técnica, insira o "Custo do Kit" (equipamentos + frete) e a sua "Margem de Lucro" (%). O sistema calculará automaticamente o "Valor do Investimento" final.</li>
                   <li><strong>Entrada:</strong> Você pode definir o valor de entrada para que o sistema calcule o saldo restante a ser financiado.</li>
                 </ul>
@@ -94,7 +95,7 @@ export const SupportModal: React.FC<SupportModalProps> = ({ isOpen, onClose }) =
                 <ul className="text-sm text-slate-600 space-y-2 list-disc pl-5">
                   <li><strong>Configurações da Proposta:</strong> No modo "PROPOSTA", clique no ícone de engrenagem para editar os dados da sua empresa, nome do vendedor, garantias e condições de pagamento.</li>
                   <li><strong>Histórico:</strong> Use o botão "SALVAR PROJETO" para guardar a proposta no seu dispositivo (funciona offline). Use o ícone de relógio no topo para carregar projetos antigos.</li>
-                  <li><strong>Impressão (PDF):</strong> Clique em "IMPRIMIR PROPOSTA". Na janela de impressão do navegador, certifique-se de <strong>ativar "Gráficos de plano de fundo"</strong> (para manter as cores) e <strong>desativar "Cabeçalhos e rodapés"</strong>. Salve como PDF ou envie para a impressora.</li>
+                  <li><strong>Baixar Proposta (PDF):</strong> Clique em "BAIXAR PROPOSTA (PDF)". O sistema irá gerar automaticamente um arquivo PDF pronto para ser enviado ao cliente via WhatsApp ou e-mail. Não é mais necessário configurar a impressão do navegador!</li>
                 </ul>
               </div>
             </div>
