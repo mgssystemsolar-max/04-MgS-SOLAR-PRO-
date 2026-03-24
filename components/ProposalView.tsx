@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Sun, CheckCircle2, Zap, Calendar, TrendingUp, DollarSign, PenSquare, Clock, Info, Home, ShieldCheck, HardHat, FileText, Camera } from 'lucide-react';
+import { Sun, CheckCircle2, Zap, Calendar, TrendingUp, DollarSign, PenSquare, Clock, Info, Home, ShieldCheck, HardHat, FileText, Camera, CreditCard, Landmark } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, Cell, CartesianGrid } from 'recharts';
 import { SolarSystemData, TechnicalSpecs, FinancialProjection, MonthlyProduction, ChecklistItem, ProposalSettings } from '../types';
 
@@ -22,6 +22,15 @@ export const ProposalView: React.FC<Props> = ({
   
   const formatMoney = (val: number) => {
     return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+  };
+
+  const formatNumber = (val: number, decimals: number = 0) => {
+    return val.toLocaleString('pt-BR', { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+  };
+
+  const calculateInstallment = (principal: number, months: number, rate: number = 0.0149) => {
+    if (principal <= 0) return 0;
+    return (principal * rate) / (1 - Math.pow(1 + rate, -months));
   };
 
   const getStructureDescription = (type: string) => {
@@ -115,7 +124,7 @@ export const ProposalView: React.FC<Props> = ({
                            <b>Ligação:</b> {data.connectionType} ({data.clientGroup === 'A' ? 'Grupo A' : 'Grupo B'})
                         </span>
                         <span className="text-xs bg-white border border-slate-200 px-2 py-1 rounded text-slate-500">
-                           <b>Consumo Médio:</b> ~{estimatedConsumption} kWh
+                           <b>Consumo Médio:</b> ~{formatNumber(estimatedConsumption)} kWh
                         </span>
                     </div>
                 </div>
@@ -144,12 +153,12 @@ export const ProposalView: React.FC<Props> = ({
                         <tbody>
                              <tr className="bg-slate-50 border-b border-slate-100">
                                 <td className="p-3 font-semibold text-slate-600">Potência Total (Gerador)</td>
-                                <td className="p-3 font-bold text-slate-900 text-right">{specs.totalPowerKw.toFixed(2)} kWp</td>
+                                <td className="p-3 font-bold text-slate-900 text-right">{formatNumber(specs.totalPowerKw, 2)} kWp</td>
                             </tr>
                             <tr className="border-b border-slate-100">
                                 <td className="p-3 font-semibold text-slate-600">Módulos Fotovoltaicos</td>
                                 <td className="p-3 text-slate-700 text-right">
-                                    {data.moduleCount}x {data.moduleBrand ? data.moduleBrand : ''} {data.modulePowerW}W
+                                    {data.moduleCount}x {data.moduleBrand ? data.moduleBrand : ''} {formatNumber(data.modulePowerW)}W
                                     <div className="text-[10px] text-slate-400">Tecnologia Monocristalina / PERC</div>
                                 </td>
                             </tr>
@@ -166,7 +175,7 @@ export const ProposalView: React.FC<Props> = ({
                             </tr>
                              <tr className="bg-slate-50">
                                 <td className="p-3 font-semibold text-slate-600">Produção Estimada (Mês)</td>
-                                <td className="p-3 font-bold text-green-600 text-right">~ {Math.round(specs.generationMonthlyAvg)} kWh/mês</td>
+                                <td className="p-3 font-bold text-green-600 text-right">~ {formatNumber(Math.round(specs.generationMonthlyAvg))} kWh/mês</td>
                             </tr>
                         </tbody>
                     </table>
@@ -216,8 +225,48 @@ export const ProposalView: React.FC<Props> = ({
             </div>
             
             <div className="mt-6 pt-6 border-t border-slate-700 print:border-slate-300">
+                <h4 className="text-sm font-bold uppercase text-slate-300 mb-4 flex items-center gap-2 print:text-slate-700">
+                    <CreditCard size={16} /> Formas de Pagamento
+                </h4>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* À Vista */}
+                    <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 print:bg-slate-50 print:border-slate-200">
+                        <div className="flex items-center gap-2 text-green-400 font-bold mb-2 print:text-green-600">
+                            <DollarSign size={18} /> À Vista
+                        </div>
+                        <div className="text-3xl font-black text-white print:text-black mb-1">{formatMoney(data.investmentAmount)}</div>
+                        <div className="text-xs text-slate-400 print:text-slate-500">Pagamento facilitado conforme cronograma de obra.</div>
+                    </div>
+
+                    {/* Financiamento */}
+                    <div className="bg-slate-800 p-5 rounded-xl border border-slate-700 print:bg-slate-50 print:border-slate-200">
+                        <div className="flex items-center gap-2 text-sky-400 font-bold mb-2 print:text-sky-600">
+                            <Landmark size={18} /> Financiamento Bancário
+                        </div>
+                        <div className="flex justify-between items-center text-sm text-slate-300 mb-3 print:text-slate-600 border-b border-slate-700 print:border-slate-300 pb-2">
+                            <span>Entrada: <strong className="text-white print:text-black">{formatMoney(data.downPayment || 0)}</strong></span>
+                            <span>Saldo: <strong className="text-white print:text-black">{formatMoney(data.investmentAmount - (data.downPayment || 0))}</strong></span>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                            {[24, 36, 48, 60, 72].map(months => {
+                                const installment = calculateInstallment(data.investmentAmount - (data.downPayment || 0), months);
+                                return (
+                                    <div key={months} className="bg-slate-900 p-2 rounded-lg border border-slate-700 text-center print:bg-white print:border-slate-200">
+                                        <div className="text-[10px] text-slate-400 print:text-slate-500">{months}x de</div>
+                                        <div className="text-sm font-bold text-white print:text-black">{formatMoney(installment)}</div>
+                                    </div>
+                                )
+                            })}
+                        </div>
+                        <div className="text-[9px] text-slate-500 mt-3 text-center">* Simulação com taxa estimada de 1,49% a.m. Sujeito a análise de crédito.</div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="mt-6 pt-6 border-t border-slate-700 print:border-slate-300">
                 <h4 className="text-xs font-bold uppercase text-slate-400 mb-2 flex items-center gap-2 print:text-slate-600">
-                    <PenSquare size={12} /> Condições de Pagamento
+                    <PenSquare size={12} /> Observações de Pagamento
                 </h4>
                 <textarea 
                     value={settings.paymentTerms}

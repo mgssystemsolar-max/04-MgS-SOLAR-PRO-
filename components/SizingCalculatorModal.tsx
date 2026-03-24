@@ -102,7 +102,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                     type="number" 
                     value={targetConsumption} 
                     onChange={e => setTargetConsumption(Number(e.target.value))}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                   />
                 </div>
               </div>
@@ -115,7 +115,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                     type="number" 
                     value={roofArea} 
                     onChange={e => setRoofArea(Number(e.target.value))}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                   />
                 </div>
               </div>
@@ -128,7 +128,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                     type="number" 
                     value={panelPower} 
                     onChange={e => setPanelPower(Number(e.target.value))}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                   />
                 </div>
               </div>
@@ -142,7 +142,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                     step="0.1"
                     value={hsp} 
                     onChange={e => setHsp(Number(e.target.value))}
-                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                    className="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                   />
                 </div>
               </div>
@@ -154,7 +154,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                   step="0.01"
                   value={panelWidth} 
                   onChange={e => setPanelWidth(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                 />
               </div>
 
@@ -165,7 +165,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                   step="0.01"
                   value={panelHeight} 
                   onChange={e => setPanelHeight(Number(e.target.value))}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 text-slate-900"
                 />
               </div>
 
@@ -223,7 +223,7 @@ export const SizingCalculatorModal: React.FC<SizingCalculatorModalProps> = ({
                 <select 
                   value={selectedInverter}
                   onChange={(e) => setSelectedInverter(e.target.value)}
-                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-slate-50"
+                  className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500 bg-slate-50 text-slate-900"
                 >
                   {INVERTER_OPTIONS.map(inv => (
                     <option key={inv} value={inv}>{inv}</option>

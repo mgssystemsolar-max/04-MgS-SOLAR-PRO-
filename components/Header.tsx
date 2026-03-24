@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { LogOut, Sun, Wifi, WifiOff } from 'lucide-react';
+import { LogOut, Sun, Wifi, WifiOff, LifeBuoy } from 'lucide-react';
 
 interface HeaderProps {
   onLogout: () => void;
+  onOpenSupport: () => void;
   userEmail?: string;
 }
 
-export const Header: React.FC<HeaderProps> = ({ onLogout, userEmail }) => {
+export const Header: React.FC<HeaderProps> = ({ onLogout, onOpenSupport, userEmail }) => {
   const [logoError, setLogoError] = useState(false);
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
@@ -50,11 +51,18 @@ export const Header: React.FC<HeaderProps> = ({ onLogout, userEmail }) => {
       <div className="flex items-center gap-4 print:hidden">
         <span className="text-sm text-slate-400 hidden sm:block">{userEmail}</span>
         <button 
+          onClick={onOpenSupport}
+          className="flex items-center gap-2 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors shadow-lg shadow-sky-600/20"
+        >
+          <LifeBuoy size={16} />
+          <span className="hidden sm:inline">SUPORTE E MANUAL</span>
+        </button>
+        <button 
           onClick={onLogout}
           className="flex items-center gap-2 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-bold transition-colors"
         >
           <LogOut size={16} />
-          SAIR
+          <span className="hidden sm:inline">SAIR</span>
         </button>
       </div>
     </header>

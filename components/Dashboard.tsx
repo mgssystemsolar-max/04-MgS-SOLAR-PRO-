@@ -9,6 +9,7 @@ import { ChecklistCard } from './ChecklistCard';
 import { ProposalView } from './ProposalView';
 import { HistoryModal } from './HistoryModal';
 import { SizingCalculatorModal } from './SizingCalculatorModal';
+import { SupportModal } from './SupportModal';
 import { calculateTechnicalSpecs, calculateProduction, generateDefaultChecklist, calculatePayback, calculateFinancials, INVERTER_OPTIONS } from '../services/solarLogic';
 import { SolarSystemData, ChecklistItem, User, SavedProject, ProposalSettings } from '../types';
 
@@ -73,6 +74,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
 
   // Calculator State
   const [calculatorOpen, setCalculatorOpen] = useState(false);
+
+  // Support State
+  const [supportOpen, setSupportOpen] = useState(false);
 
   // Derived State (Calculations)
   const specs = useMemo(() => calculateTechnicalSpecs(solarData), [solarData]);
@@ -257,7 +261,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     <div className="min-h-screen bg-slate-900 pb-20 print:bg-white print:pb-0">
       <div className="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
         <div className={viewMode === 'proposal' ? 'hidden print:hidden' : ''}>
-           <Header onLogout={onLogout} userEmail={user.email} />
+           <Header 
+             onLogout={onLogout} 
+             userEmail={user.email} 
+             onOpenSupport={() => setSupportOpen(true)}
+           />
         </div>
 
         <div className="flex flex-wrap justify-between items-center mb-6 gap-4 print:hidden">
@@ -377,6 +385,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
           setCalculatorOpen(false);
           setViewMode('proposal');
         }}
+      />
+
+      <SupportModal 
+        isOpen={supportOpen}
+        onClose={() => setSupportOpen(false)}
       />
 
       {/* Save Project Modal */}
