@@ -14,7 +14,9 @@ import { calculateTechnicalSpecs, calculateProduction, generateDefaultChecklist,
 import { SolarSystemData, ChecklistItem, User, SavedProject, ProposalSettings } from '../types';
 
 import { saveProjectOffline, getOfflineProjects, deleteProjectOffline, syncOfflineData } from '../services/offlineStorage';
-import html2pdf from 'html2pdf.js';
+// @ts-ignore
+import domtoimage from 'dom-to-image-more';
+import { jsPDF } from 'jspdf';
 
 interface DashboardProps {
   user: User;
@@ -65,7 +67,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
     warrantyText: '25 Anos de Eficiência Linear (80%) nos Módulos.\n10 Anos de Garantia contra defeitos de fabricação nos inversores.\n1 Ano de garantia na instalação elétrica e montagem.',
     paymentTerms: 'Entrada de 30% e restante na entrega dos equipamentos.\nFinanciamento bancário em até 60x.',
     differentialsText: '• Equipe própria certificada NR-10 e NR-35.\n• Acompanhamento de geração via App.\n• Projetos personalizados com análise de sombreamento.\n• Pós-venda ativo com limpeza programada.',
-    validityDays: 5
+    validityDays: 5,
+    maintenanceFeeText: 'OBSERVAÇÃO: Taxa de deslocamento para manutenção não inclusa na garantia.'
   });
 
   // History State
@@ -217,23 +220,58 @@ export const Dashboard: React.FC<DashboardProps> = ({ user, onLogout }) => {
       setViewMode('proposal');
 
       // 2. Aguarda um breve momento para o React atualizar o DOM antes de chamar o print
-      setTimeout(() => {
+      setTimeout(async () => {
           const element = document.getElementById('proposal-content');
           if (element) {
-              const opt = {
-                  margin:       [5, 5, 5, 5],
-                  filename:     `Proposta_${solarData.clientName || 'Cliente'}.pdf`,
-                  image:        { type: 'jpeg', quality: 0.98 },
-                  html2canvas:  { scale: 2, useCORS: true, logging: false },
-                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-              };
-              
-              // Tenta usar html2pdf para baixar o arquivo
-              html2pdf().set(opt).from(element).save().catch((err: any) => {
+              try {
+                  const scale = 2;
+                  const dataUrl = await domtoimage.toPng(element, {
+                      quality: 0.98,
+                      bgcolor: '#ffffff',
+                      width: element.clientWidth * scale,
+                      height: element.clientHeight * scale,
+                      style: {
+                          transform: `scale(${scale})`,
+                          transformOrigin: 'top left',
+                          width: `${element.clientWidth}px`,
+                          height: `${element.clientHeight}px`
+                      }
+                  });
+
+                  const pdf = new jsPDF({
+                      orientation: 'portrait',
+                      unit: 'mm',
+                      format: 'a4'
+                  });
+
+                  const pdfWidth = pdf.internal.pageSize.getWidth();
+                  const pdfHeight = pdf.internal.pageSize.getHeight();
+                  
+                  const imgProps = pdf.getImageProperties(dataUrl);
+                  const margin = 5;
+                  const printWidth = pdfWidth - (margin * 2);
+                  const printHeight = (imgProps.height * printWidth) / imgProps.width;
+
+                  let heightLeft = printHeight;
+                  let position = margin;
+                  const pageHeight = pdfHeight - (margin * 2);
+
+                  pdf.addImage(dataUrl, 'PNG', margin, position, printWidth, printHeight);
+                  heightLeft -= pageHeight;
+
+                  while (heightLeft > 0) {
+                      position -= pageHeight;
+                      pdf.addPage();
+                      pdf.addImage(dataUrl, 'PNG', margin, position, printWidth, printHeight);
+                      heightLeft -= pageHeight;
+                  }
+
+                  pdf.save(`Proposta_${solarData.clientName || 'Cliente'}.pdf`);
+              } catch (err) {
                   console.error("Erro ao gerar PDF:", err);
-                  // Fallback para impressão nativa caso o html2pdf falhe
+                  // Fallback para impressão nativa caso falhe
                   window.print();
-              });
+              }
           } else {
               window.print();
           }

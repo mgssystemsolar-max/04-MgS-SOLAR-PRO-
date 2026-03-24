@@ -91,4 +91,5 @@ export interface ProposalSettings {
   paymentTerms: string;
   differentialsText: string;
   validityDays: number;
+  maintenanceFeeText?: string;
 }

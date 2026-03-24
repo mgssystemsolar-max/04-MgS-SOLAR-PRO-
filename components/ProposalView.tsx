@@ -373,6 +373,12 @@ export const ProposalView: React.FC<Props> = ({
 
         {/* FOOTER */}
         <div className="mt-8 pt-4 border-t border-slate-100 text-center print:break-inside-avoid">
+             <input 
+                 type="text"
+                 value={settings.maintenanceFeeText || 'OBSERVAÇÃO: Taxa de deslocamento para manutenção não inclusa na garantia.'}
+                 onChange={(e) => onSettingsChange({...settings, maintenanceFeeText: e.target.value})}
+                 className="text-[11px] font-bold text-red-500 bg-transparent border-b border-transparent hover:border-red-300 focus:border-red-500 focus:outline-none w-full text-center mb-2 print:border-none transition-colors"
+             />
              <p className="text-[10px] text-slate-400">
                 Esta proposta é uma estimativa baseada nos dados fornecidos. A geração real pode variar conforme condições climáticas. 
                 Projeto sujeito à aprovação da concessionária de energia.
